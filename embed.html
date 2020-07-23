@@ -1,0 +1,214 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="interact.css">
+<script type="module">
+    import interact from
+    'https://cdn.jsdelivr.net/npm/@interactjs/interactjs/index.js'
+
+    interact('.item').draggable({
+      onmove(event) {
+        console.log(event.pageX,
+                    event.pageY)
+      }
+    })
+    interact('.dropzone').dropzone({
+    // only accept elements matching this CSS selector
+    accept: '#yes-drop',
+    // Require a 75% element overlap for a drop to be possible
+    overlap: 0.75,
+
+    // listen for drop related events:
+
+    ondropactivate: function (event) {
+      // add active dropzone feedback
+      event.target.classList.add('drop-dactive')
+    },
+    ondragenter: function (event) {
+      var draggableElement = event.relatedTarget
+      var dropzoneElement = event.target
+      // feedback the possibility of a drop
+      dropzoneElement.classList.add('drop-taarget')
+      console.log(dropzoneElement.style.backgroundColor)
+      draggableElement.classList.add('can-drop')
+      draggableElement.style.backgroundColor = dropzoneElement.style.backgroundColor
+
+      //draggableElement.textContent = 'Dragged in'
+    },
+    ondragleave: function (event) {
+      // remove the drop feedback style
+      event.target.classList.remove('drop-target')
+      event.relatedTarget.classList.remove('can-drop')
+      //event.relatedTarget.textContent = 'Dragged out'
+    },
+    ondrop: function (event) {
+      var draggableElement = event.relatedTarget
+      var dropzoneElement = event.target
+      draggableElement.classList.add(dropzoneElement.id)
+      if(dropzoneElement.id == "bin-dropzone"){
+        console.log("dropzoneElement.id")
+        draggableElement.parentNode.removeChild(draggableElement);
+      }
+      //event.relatedTarget.textContent = 'Dropped'
+    },
+    ondropdeactivate: function (event) {
+      // remove active dropzone feedback
+      event.target.classList.remove('drop-active')
+      event.target.classList.remove('drop-target')
+    }
+    })
+
+    interact('.drag-drop')
+      .draggable({
+        inertia: true,
+        modifiers: [
+          interact.modifiers.restrictRect({
+            restriction: 'parent',
+            endOnly: true
+          })
+        ],
+        autoScroll: true,
+        // dragMoveListener from the dragging demo above
+        listeners: { move: dragMoveListener }
+      })
+      function dragMoveListener (event) {
+      var target = event.target
+      target.classList.remove("inner-dropzone1")
+      target.classList.remove("inner-dropzone2")
+      target.classList.remove("inner-dropzone3")
+      target.classList.remove("inner-dropzone4")
+      // keep the dragged position in the data-x/data-y attributes
+      var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
+      var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
+
+      // translate the element
+      target.style.webkitTransform =
+        target.style.transform =
+          'translate(' + x + 'px, ' + y + 'px)'
+
+      // update the posiion attributes
+      target.setAttribute('data-x', x)
+      target.setAttribute('data-y', y)
+    }
+
+    // this function is used later in the resizing and gesture demos
+    window.dragMoveListener = dragMoveListener
+
+      /* The dragging code for '.draggable' from the demo above
+     * applies to this demo as well so it doesn't have to be repeated. */
+
+</script>
+<script>
+  var store = {"first":[], "second":[], "third": [], "fourth" : []};
+
+  function add(){
+    val = document.getElementById("addthing").value
+    document.getElementById("addthing").value = ""
+    container = document.getElementById("container")
+    a = document.createElement("div");
+    a.className = "drag-drop draggableEntry";
+    a.id = "yes-drop"
+    a.innerHTML = val
+    console.log(val)
+    if(val != ""){
+      a.setAttribute('data-x', 202)
+      a.setAttribute('data-y', -372)
+      container.appendChild(a)
+      a.style.webkitTransform =
+        a.style.transform =
+          'translate(' + 202 + 'px, ' + -372 + 'px)'
+    }
+  }
+  function save(){
+    store = {"first":[], "second":[], "third": [], "fourth" : []};
+    document.querySelectorAll('.inner-dropzone1').forEach(function(entry) {
+      console.log(entry.getAttribute('data-x'))
+      newEntry = {entry: entry.innerHTML, "x": entry.getAttribute('data-x'), "y": entry.getAttribute('data-y')};
+      store.first.push(newEntry)
+    });
+    document.querySelectorAll('.inner-dropzone2').forEach(function(entry) {
+      newEntry = {entry: entry.innerHTML, "x": entry.getAttribute('data-x'), "y": entry.getAttribute('data-y')};
+      store.second.push(newEntry)
+    });
+    document.querySelectorAll('.inner-dropzone3').forEach(function(entry) {
+      newEntry = {entry: entry.innerHTML, "x": entry.getAttribute('data-x'), "y": entry.getAttribute('data-y')};
+      store.third.push(newEntry)
+    });
+    document.querySelectorAll('.inner-dropzone4').forEach(function(entry) {
+      newEntry = {entry: entry.innerHTML, "x": entry.getAttribute('data-x'), "y": entry.getAttribute('data-y')};
+      store.fourth.push(newEntry)
+    });
+    console.log(store);
+  }
+
+  function createEntry(entry, box_number){
+    container = document.getElementById("container")
+    console.log(entry)
+    a = document.createElement("div");
+    a.className = "drag-drop draggableEntry inner-dropzone" + box_number;
+    a.id = "yes-drop"
+    a.innerHTML = entry.entry
+    a.setAttribute('data-x', entry.x)
+    a.setAttribute('data-y', entry.y)
+    container.appendChild(a)
+    a.style.webkitTransform =
+      a.style.transform =
+        'translate(' + entry.x + 'px, ' + entry.y + 'px)'
+  }
+  function recover(){
+    document.querySelectorAll('.draggableEntry').forEach(function(entry) {
+      entry.parentNode.removeChild(entry);
+    })
+    store.first.forEach(function(entry){
+      createEntry(entry, "1");
+    })
+    store.second.forEach(function(entry){
+      createEntry(entry, "2");
+    })
+    store.third.forEach(function(entry){
+      createEntry(entry, "3");
+    })
+    store.fourth.forEach(function(entry){
+      createEntry(entry, "4");
+    })
+  }
+ </script>
+</head>
+<div id="container">
+<!--<div id="no-drop" class="drag-drop"> #no-drop </div>
+
+<div id="yes-drop" class="drag-drop"> #yes-drop </div>
+</div>-->
+
+  <table>
+    <tr>
+      <td class="table_cell">
+        <div id="inner-dropzone1" style="background-color: #52bf5b" class="dropzone te">
+          <p class="categoryName"> Group 1</p>
+        </div>
+
+      </td>
+      <td class="table_cell">
+        <div id="inner-dropzone2" class="dropzone te" style="background-color: #a83472"><p class="categoryName"> Group 2</p></div>
+      </td>
+    </tr>
+    <tr>
+      <td class="table_cell">
+        <div id="inner-dropzone3" class="dropzone te" style="background-color: #e3a35f"><p class="categoryName"> Group 3</p></div>
+      </td>
+      <td class="table_cell">
+        <div id="inner-dropzone4" class="dropzone te" style="background-color: #4e78ba"><p class="categoryName"> Group 4</p></div>
+      </td>
+    </tr>
+  </table>
+<div id="bin-dropzone" class="dropzone bin"><p class="categoryName"></p></div>
+</div>
+<div style="padding: 10px 10px 10px 10px; background-color: #77e9ed; width: 475px; border-radius: 5px ">
+<form style="margin: 20px 10px 10px 10px"onsubmit="return false">
+  <input id="addthing" class="input1" type="text" placeholder="Enter a Goal">
+  <button onclick="add()" class="button">Add</button>
+  <button onclick="save()" class="button">Save</button>
+  <button onclick="recover()" class="button">Load</button>
+</form>
+</div>
+
+</html>
