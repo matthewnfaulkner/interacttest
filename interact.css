@@ -47,18 +47,47 @@ body {
   color: #000;
   background-color: #4e4;
 }
-
+.drag-drop.is-dragged {
+  z-index: 1000
+}
 .te{
   height:100%;
   width:85%;
   margin: 3px 3px 3px 3px;
 }
 
+.pe{
+  margin: 0px 0px 0px 0px;
+  height:80px;
+  text-align: center;
+  padding: 0 0 0 0;
+  width: 100%;
+  border: none;
+  background-color: white;
+}
+
+.prio_cell{
+  height: 80px;
+  width:20%;
+}
 .table_cell{
   width: 20%;
   height: 200px;
+  padding: 0px 0px 0px 0px;
 }
 
+.prio-drag-drop{
+  width: 100%;
+  position: relative;
+  border-radius: 10px;
+}
+.prio-drag-drop.avoid{
+  -webkit-transition:all .2s ease-out;
+-moz-transition:all .2s ease-out;
+-ms-transition:all .2s ease-out;
+-o-transition:all .2s ease-out;
+transition:all .2s ease-out;
+}
 .draggableEntry{
   position: fixed;
   width: 60px;
